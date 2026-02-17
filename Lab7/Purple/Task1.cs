@@ -7,13 +7,15 @@ namespace Lab7.Purple
   {
     public struct Participant
     {
+      // Поля
       private string _name;
       private string _surname;
       private double[] _coefs;
       private int[,] _marks;
+
+      // Свойства
       public string Name => _name;
       public string Surname => _surname;
-
       public double[] Coefs
       {
         get {
@@ -55,6 +57,7 @@ namespace Lab7.Purple
         }
       }
 
+      // Методы
       public Participant(string name, string surname)
       {
         _name = name;
@@ -85,7 +88,17 @@ namespace Lab7.Purple
       }
       public void Print()
       {
-        Console.WriteLine($"Name:{_name}  Surname:{_surname}  Marks:{_marks}  Coefs:{_coefs}");
+        Console.Write($"Name:{_name}  Surname:{_surname}\nCoefs:");
+        for (int i = 0; i < _coefs.Length; i++)
+          Console.Write(_coefs[i] + " ");
+        Console.Write("\nMarks:");
+        for (int i = 0; i < _marks.GetLength(0); i++)
+        {
+          for (int j = 0; j < _marks.GetLength(1); j++)
+            Console.Write(_marks[i, j] + " ");
+          Console.WriteLine();
+        }
+        Console.WriteLine();
       }
     }
   }
