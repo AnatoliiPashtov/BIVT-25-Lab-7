@@ -29,17 +29,15 @@ namespace Lab7.Purple
         {
           for (int i = 0; i < _marks.Length; i++)
             _totalMark += _marks[i];
-          return Math.Round(_totalMark, 7);
+          _totalMark = Math.Round(_totalMark, 7);
+          return _totalMark;
         }
       }
       public int Score
       {
         get
         {
-          int answer = 0;
-          for (int i = 0; i < _places.Length; i++)
-            answer += _places[i];
-          return answer;
+          return _places.Sum();
         }
       }
 
@@ -50,7 +48,7 @@ namespace Lab7.Purple
         _surname = surname;
         _marks = new double[7] { 0, 0, 0, 0, 0, 0, 0 };
         _places = new int[7];
-        _topPlace = 0;
+        _topPlace = int.MaxValue;
         _totalMark = 0;
       }
 
@@ -67,8 +65,8 @@ namespace Lab7.Purple
           participants = participants.OrderBy(p => p.Marks[i]).ToArray();
           for (int j = 0; j < participants.Length; j++)
           {
-            participants[j]._places[i] = j + 1;
-            participants[j]._topPlace = Math.Max(participants[j].TopPlace, j + 1);
+            participants[j]._places[i] = participants.Length - j;
+            participants[j]._topPlace = Math.Min(participants[j].TopPlace, participants.Length - j);
           }
         }
         ///*
@@ -110,7 +108,7 @@ namespace Lab7.Purple
         for (int i = 0; i < participants.Length; i++)
         {
           Console.WriteLine($"{participants[i]._name}  {participants[i]._surname}");
-          Console.WriteLine($"{participants[i].TotalMark}  {participants[i].TopPlace}  {participants[i]._places.Sum()}");
+          Console.WriteLine($"{participants[i].TotalMark}  {participants[i].TopPlace}  {participants[i]._topPlace}  {participants[i]._places.Sum()}");
           for (int j = 0; j < participants[i].Marks.Length; j++)
             Console.Write(participants[i].Marks[j] + " ");
           Console.WriteLine();
