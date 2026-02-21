@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.IO.Pipes;
 using System.Numerics;
@@ -20,20 +21,25 @@ namespace Lab7.Purple
       public string Name => _name;
       public string Surname => _surname;
       public double[] Marks => _marks.ToArray();
-      public int[] Places
+      public int[] Places => _places.ToArray();
+      public int TopPlace => _topPlace;
+      public double TotalMark
       {
         get
         {
-          return new int[0];
+          for (int i = 0; i < _marks.Length; i++)
+            _totalMark += _marks[i];
+          return Math.Round(_totalMark, 7);
         }
       }
-      public int TopPlace => _topPlace;
-      public double TotalMark => _totalMark;
       public int Score
       {
         get
         {
-          return 0;
+          int answer = 0;
+          for (int i = 0; i < _places.Length; i++)
+            answer += _places[i];
+          return answer;
         }
       }
 
@@ -56,39 +62,69 @@ namespace Lab7.Purple
       }
       public static void SetPlaces(Participant[] participants)
       {
-        /*
-         * Использовать матрицу
-         * строки это судьи
-         * столбцы спортсмены 
-         */
-        int[,] arrayPlaces = new int[7, participants.Length];
-        for (int i = 0; i < participants.Length; i++)
+        for (int i = 0; i < 7; i++)
         {
-          double[] partMarks = participants[i]._marks;
-          double limit = 7;
-          for (int j = 0; j < 7; j++)
+          participants = participants.OrderBy(p => p.Marks[i]).ToArray();
+          for (int j = 0; j < participants.Length; j++)
           {
-            int mxi = 0;
-            double mx = int.MinValue;
-            for (int k = 0; k < 7; k++)
-              if ((partMarks[k] > mx) && (mx < limit))
-                (mx, mxi) = (partMarks[k], k);
-            limit = mx;
-            Console.WriteLine($"{mx}  {mxi}  {limit}");
-            arrayPlaces[j, i] = 7 - mxi;
+            participants[j]._places[i] = j + 1;
+            participants[j]._topPlace = Math.Max(participants[j].TopPlace, j + 1);
           }
         }
-        for (int i = 0; i < arrayPlaces.GetLength(0); i++)
+        ///*
+        // * Использовать матрицу
+        // * строки это судьи
+        // * столбцы спортсмены 
+        // */
+        //int[,] arrayPlaces = new int[7, participants.Length];
+
+        //for (int i = 0; i < 7; i++)
+        //{
+        //  double limit = 7;
+        //  for (int j = 0; j < participants.Length; j++)
+        //  {
+        //    //double partMark = participants[j]._marks[i];
+        //    int mxi = 0;
+        //    double mx = double.MinValue;
+        //    for (int k = 0; k < participants.Length; k++)
+        //      if ((participants[k]._marks[i] > mx) && (participants[k]._marks[i] < limit))
+        //        (mx, mxi) = (participants[k]._marks[i], k);
+        //    limit = mx;
+        //    arrayPlaces[i, j] = mxi + 1;
+        //    //Console.WriteLine($"{mx}  {mxi}  {limit}");
+        //  }
+        //  //Console.WriteLine("---");
+        //}
+        //for (int i = 0; i < participants.Length; i++)
+        //  for (int j = 0; j < 7; j++)
+        //    participants[i]._places[j] = arrayPlaces[j, i];
+
+        //for (int i = 0; i < arrayPlaces.GetLength(0); i++)
+        //{
+        //  for (int j = 0; j < arrayPlaces.GetLength(1); j++)
+        //    Console.Write(arrayPlaces[i, j] + " ");
+        //  Console.WriteLine();
+        //}
+        //Console.WriteLine();
+
+        for (int i = 0; i < participants.Length; i++)
         {
-          for (int j = 0; j < arrayPlaces.GetLength(1); j++)
-            Console.Write(arrayPlaces[i, j] + " ");
+          Console.WriteLine($"{participants[i]._name}  {participants[i]._surname}");
+          Console.WriteLine($"{participants[i].TotalMark}  {participants[i].TopPlace}  {participants[i]._places.Sum()}");
+          for (int j = 0; j < participants[i].Marks.Length; j++)
+            Console.Write(participants[i].Marks[j] + " ");
           Console.WriteLine();
+          for (int j = 0; j < participants[i]._places.Length; j++)
+            Console.Write(participants[i]._places[j] + " ");
+          Console.WriteLine("\n---");
         }
-        Console.WriteLine();
       }
       public static void Sort(Participant[] array)
       {
-
+        for (int i = 0; i < array.Length; i++)
+          for (int j = 0; j < array.Length - i - 1; j++)
+            if (array[j].Places.Sum() > array[j + 1].Places.Sum())
+              (array[j], array[j + 1]) = (array[j + 1], array[j]);
       }
       public void Print()
       {
