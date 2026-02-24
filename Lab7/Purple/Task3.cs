@@ -14,7 +14,6 @@ namespace Lab7.Purple
       private string _surname;
       private double[] _marks;
       private int[] _places;
-      private int _topPlace;
       private double _totalMark;
 
       // Свойства
@@ -22,7 +21,7 @@ namespace Lab7.Purple
       public string Surname => _surname;
       public double[] Marks => _marks.ToArray();
       public int[] Places => _places.ToArray();
-      public int TopPlace => _topPlace;
+      public int TopPlace => _places.Min();
       public double TotalMark
       {
         get
@@ -48,7 +47,6 @@ namespace Lab7.Purple
         _surname = surname;
         _marks = new double[7] { 0, 0, 0, 0, 0, 0, 0 };
         _places = new int[7];
-        _topPlace = int.MaxValue;
         _totalMark = 0;
       }
 
@@ -64,65 +62,29 @@ namespace Lab7.Purple
         {
           participants = participants.OrderBy(p => p.Marks[i]).ToArray();
           for (int j = 0; j < participants.Length; j++)
-          {
             participants[j]._places[i] = participants.Length - j;
-            participants[j]._topPlace = Math.Min(participants[j].TopPlace, participants.Length - j);
-          }
         }
-        ///*
-        // * Использовать матрицу
-        // * строки это судьи
-        // * столбцы спортсмены 
-        // */
-        //int[,] arrayPlaces = new int[7, participants.Length];
-
-        //for (int i = 0; i < 7; i++)
-        //{
-        //  double limit = 7;
-        //  for (int j = 0; j < participants.Length; j++)
-        //  {
-        //    //double partMark = participants[j]._marks[i];
-        //    int mxi = 0;
-        //    double mx = double.MinValue;
-        //    for (int k = 0; k < participants.Length; k++)
-        //      if ((participants[k]._marks[i] > mx) && (participants[k]._marks[i] < limit))
-        //        (mx, mxi) = (participants[k]._marks[i], k);
-        //    limit = mx;
-        //    arrayPlaces[i, j] = mxi + 1;
-        //    //Console.WriteLine($"{mx}  {mxi}  {limit}");
-        //  }
-        //  //Console.WriteLine("---");
-        //}
-        //for (int i = 0; i < participants.Length; i++)
-        //  for (int j = 0; j < 7; j++)
-        //    participants[i]._places[j] = arrayPlaces[j, i];
-
-        //for (int i = 0; i < arrayPlaces.GetLength(0); i++)
-        //{
-        //  for (int j = 0; j < arrayPlaces.GetLength(1); j++)
-        //    Console.Write(arrayPlaces[i, j] + " ");
-        //  Console.WriteLine();
-        //}
-        //Console.WriteLine();
-
-        for (int i = 0; i < participants.Length; i++)
-        {
-          Console.WriteLine($"{participants[i]._name}  {participants[i]._surname}");
-          Console.WriteLine($"{participants[i].TotalMark}  {participants[i].TopPlace}  {participants[i]._topPlace}  {participants[i]._places.Sum()}");
-          for (int j = 0; j < participants[i].Marks.Length; j++)
-            Console.Write(participants[i].Marks[j] + " ");
-          Console.WriteLine();
-          for (int j = 0; j < participants[i]._places.Length; j++)
-            Console.Write(participants[i]._places[j] + " ");
-          Console.WriteLine("\n---");
-        }
+      }
+      private static bool flag(Participant p1, Participant p2)
+      {
+        bool swap = false;
+        if (p1.Score < p2.Score)
+          swap = true;
+        else if (p1.Score == p2.Score && p1.TopPlace < p2.TopPlace)
+          swap = true;
+        else if (p1.Score == p2.Score && p1.TopPlace == p2.TopPlace && p1.TotalMark > p2.TotalMark)
+          swap = true;
+        return swap;
       }
       public static void Sort(Participant[] array)
       {
         for (int i = 0; i < array.Length; i++)
-          for (int j = 0; j < array.Length - i - 1; j++)
-            if (array[j].Places.Sum() > array[j + 1].Places.Sum())
-              (array[j], array[j + 1]) = (array[j + 1], array[j]);
+        {
+          for (int j = i; j > 0 && flag(array[j], array[j - 1]); j--)
+          {
+            (array[j], array[j - 1]) = (array[j - 1], array[j]);
+          }
+        }
       }
       public void Print()
       {
@@ -132,7 +94,7 @@ namespace Lab7.Purple
         Console.Write("\nPlaces:");
         for (int i = 0; i < _places.Length; i++)
           Console.Write(_places[i] + " ");
-        Console.WriteLine($"\nTopPlace:{_topPlace}  totalMark:{_totalMark}\n------------");
+        Console.WriteLine($"\nTotalMark:{_totalMark}\n------------");
       }
     }
   }
