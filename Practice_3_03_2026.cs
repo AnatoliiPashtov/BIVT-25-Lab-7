@@ -76,4 +76,5 @@ namespace ConsoleApp13
       Console.WriteLine($"Student:  Name:{_name}  Age:{_age}  Unik:{_unik}");
     }
   }
+
 }
